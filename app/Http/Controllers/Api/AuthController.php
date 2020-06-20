@@ -9,20 +9,35 @@ use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Validator;
+
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required|min:8'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => "Invalid Input",
+                'user' => null
+            ]);
+        }
         $creds = $request->only(['email', 'password']);
         if (!$token = Auth()->attempt($creds)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Wrong credential'
+                'message' => 'username or password is invalid'
             ]);
         }
         return response()->json([
             'success' => true,
+            'message' => 'Login Successfully',
+
             'token' => $token,
             'user' => new UserResource(Auth::user())
         ]);
@@ -35,18 +50,33 @@ class AuthController extends Controller
         $user = new User();
 
         try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|min:5',
+                'password' => 'required|min:8 ',
+                'email' => 'required|email|unique:users,email',
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Please valdiate your registration form",
+                    'user' => null
+                ]);
+            }
+
             $user->name = $request->name;
             $user->email = $request->email;
             $user->password = $encryptPassword;
             $user->save();
             return response()->json([
                 'success' => true,
-                "user" => new UserResource($user)
+                'message' => "Registration successfully completed!",
+                'user' => new UserResource($user)
             ]);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => '' . $e
+                'message' => '' . $e,
+                'user' => null
             ]);
         }
     }
