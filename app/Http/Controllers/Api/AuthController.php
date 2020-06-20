@@ -36,8 +36,7 @@ class AuthController extends Controller
         }
         return response()->json([
             'success' => true,
-            'message' => 'Login Successfully',
-
+            'message' => 'Success',
             'token' => $token,
             'user' => new UserResource(Auth::user())
         ]);
@@ -51,7 +50,6 @@ class AuthController extends Controller
 
         try {
             $validator = Validator::make($request->all(), [
-                'name' => 'required|min:5',
                 'password' => 'required|min:8 ',
                 'email' => 'required|email|unique:users,email',
             ]);
@@ -63,15 +61,12 @@ class AuthController extends Controller
                 ]);
             }
 
-            $user->name = $request->name;
+            $user->first_name = $request->first_name;
+            $user->last_name = $request->last_name;
             $user->email = $request->email;
             $user->password = $encryptPassword;
             $user->save();
-            return response()->json([
-                'success' => true,
-                'message' => "Registration successfully completed!",
-                'user' => new UserResource($user)
-            ]);
+            return $this->login($request);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
@@ -109,8 +104,6 @@ class AuthController extends Controller
     public function saveUserInfo(Request $request)
     {
         $user = User::find(Auth::user()->id);
-        $user->name = $request->name;
-        $user->lastname = $request->lastname;
         $photo = '';
 
         if ($request->photo != '') {
