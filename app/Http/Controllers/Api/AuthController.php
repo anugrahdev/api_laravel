@@ -109,7 +109,9 @@ class AuthController extends Controller
         if ($request->photo != '') {
             $photo = time() . '.jpg';
 
-            file_put_contents('storage/profiles' . $photo, base64_decode($request->photo));
+            // file_put_contents('storage/profiles/' . $photo, base64_decode($request->photo));
+            $path = $request->file('photo')->move(storage_path('app/public/profiles'), $photo);
+
             $user->photo = $photo;
         }
 

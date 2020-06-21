@@ -66,8 +66,9 @@ class PostController extends Controller
         //check if post have aphoto
         if ($request->photo  != '') {
             //choose a unique name for photo
-            $photo = time() . 'jpg';
-            file_put_contents('storage/posts/' . $photo, base64_decode($request->photo));
+            $photo = time() . '.jpg';
+            // file_put_contents('storage/posts/' . $photo, base64_decode($request->photo));
+            $path = $request->file('photo')->move(storage_path('app/public/posts'), $photo);
             $post->photo = $photo;
         }
 
