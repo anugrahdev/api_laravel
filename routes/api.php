@@ -39,3 +39,5 @@ Route::put('comment/update/{comment}', 'Api\CommentController@update')->middlewa
 
 //Like
 Route::post('post/like', 'Api\LikeController@like')->middleware('jwtAuth');
+
+Route::get('images/{type}/{fileName}', 'Api\AuthController@getImageProfile');

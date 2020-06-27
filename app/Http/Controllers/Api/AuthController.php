@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Response;
+use Intervention\Image\Facades\Image;
 
 
 class AuthController extends Controller
@@ -121,5 +123,11 @@ class AuthController extends Controller
             'success' => true,
             'photo' => $photo
         ]);
+    }
+
+    public function getImageProfile($type, $fileName)
+    {
+        $path = storage_path('app/public/' . $type . '/' . $fileName);
+        return response()->file($path);
     }
 }
